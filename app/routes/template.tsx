@@ -1,4 +1,4 @@
-import { DataFunctionArgs } from "@remix-run/cloudflare";
+import type { DataFunctionArgs } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
@@ -53,7 +53,7 @@ export default function Template() {
   const { templateName, channels, roles } = useLoaderData<typeof loader>();
 
   return (
-    <>
+    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <h1>{templateName}</h1>
       <h2>Roles</h2>
       <ul>
@@ -66,7 +66,7 @@ export default function Template() {
 
       <h2>Channels</h2>
       <ChannelList channels={channels} />
-    </>
+    </div>
   );
 }
 
@@ -85,8 +85,10 @@ function ChannelList({ channels }: { channels: Channel[] }) {
           {channel.children.length === 0 ? (
             channel.name
           ) : (
-            <details>
-              <summary>{channel.name}</summary>
+            <details open>
+              <summary>
+                <strong>{channel.name.toUpperCase()}</strong>
+              </summary>
               <ChannelList channels={channel.children} />
             </details>
           )}
