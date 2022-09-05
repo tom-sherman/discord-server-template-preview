@@ -40,20 +40,24 @@ export const loader = async ({ request, params }: DataFunctionArgs) => {
     });
   }
 
+  const template = templateSchema.parse(await res.json());
+
   return {
-    template: templateSchema.parse(await res.json()),
+    templateName: template.name,
+    roles: template.serialized_source_guild.roles,
+    channels: buildChannelTree(template.serialized_source_guild.channels),
   };
 };
 
 export default function Template() {
-  const { template } = useLoaderData<typeof loader>();
+  const { templateName, channels, roles } = useLoaderData<typeof loader>();
 
   return (
     <>
-      <h1>{template.name}</h1>
+      <h1>{templateName}</h1>
       <h2>Roles</h2>
       <ul>
-        {template.serialized_source_guild.roles.map((role) => (
+        {roles.map((role) => (
           <li style={{ color: `#${role.color}` }} key={role.id}>
             {role.name}
           </li>
@@ -61,21 +65,7 @@ export default function Template() {
       </ul>
 
       <h2>Channels</h2>
-      <ul>
-        {buildChannelTree(template.serialized_source_guild.channels).map(
-          (channel) => (
-            <li key={channel.id}>
-              {channel.children.length === 0 ? (
-                channel.name
-              ) : (
-                <details>
-                  <summary>{channel.name}</summary>
-                </details>
-              )}
-            </li>
-          )
-        )}
-      </ul>
+      <ChannelList channels={channels} />
     </>
   );
 }
